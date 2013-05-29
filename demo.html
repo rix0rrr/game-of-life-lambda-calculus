@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <title>Game of Life Exmple</title>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
+      <script src="game-of-lambdas.js"></script>
+      <script>
+
+$(function() {
+    // Use aliases for ASCII art
+    var X = alive;
+    var _ = dead;
+            
+    var N = 10;
+    var board = [_,_,_,_,_,_,_,_,_,_,
+                 _,_,_,_,_,_,_,_,_,_,
+                 _,_,_,_,_,_,_,_,_,_,
+                 _,_,_,_,X,_,_,_,_,_,
+                 _,_,_,_,_,X,_,_,_,_,
+                 _,_,_,X,X,X,_,_,_,_,
+                 _,_,_,_,_,_,_,_,_,_,
+                 _,_,_,_,_,_,_,_,_,_,
+                 _,_,_,_,_,_,_,_,_,_,
+                 _,_,_,_,_,_,_,_,_,_];
+
+    var cells = [];
+
+    var dims = 30;
+    function createTable() {
+        for (var y = 0; y < N; y++) {
+            var row = $('<tr></tr>');
+            for (var x = 0; x < N; x++) {
+                var cell = $('<td></td>').css({
+                    width: dims,
+                    height: dims
+                }).click(function(i) { return function() {
+                    board[i] = get(board[i], dead, alive);
+                    updateTable();
+                }}(y * N + x));
+
+                cells.push(cell);
+                row.append(cell);
+            }
+            $('table').append(row);
+        }
+    };
+
+    function updateTable() {
+        for (var i = 0; i < N * N; i++) {
+            cells[i].css('backgroundColor', get(board[i], 'black', 'white'));
+        }
+    }
+
+    var step = function() {
+        board = nextBoard(board, N);
+        updateTable();
+    }
+
+    $('#stepButton').click(step);
+
+    var timer = 0;
+    $('#startButton').click(function() {
+        if (timer) return;
+        timer = window.setInterval(step, 100);
+    });
+    $('#stopButton').click(function() {
+        if (!timer) return;
+        window.clearInterval(timer);
+        timer = 0;
+    });
+
+    createTable();
+    updateTable();
+});
+      </script>
+  </head>
+  <body>
+      <h1>Game of Life in Lambda Calculus</h1>
+      <table border="1" cellspacing="0">
+          <tbody id="tbl"></tbody>
+      </table>
+      <button id="stepButton">Step</button>
+      <button id="startButton">Start</button>
+      <button id="stopButton">Stop</button>
+  </body>
+</html>
